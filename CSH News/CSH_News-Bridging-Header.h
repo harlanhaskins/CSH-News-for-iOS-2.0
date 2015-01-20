@@ -11,5 +11,6 @@
 
 #import "OAuthSwift-Bridging-Header.h"
 #import "PDKeychainBindings.h"
+#import <CommonCrypto/CommonCrypto.h>
 
 #endif

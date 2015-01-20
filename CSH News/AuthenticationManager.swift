@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KeychainWrapper
 
 class AuthenticationManager: NSObject {
     
@@ -36,7 +37,7 @@ class AuthenticationManager: NSObject {
     }
     
     class var token: String? {
-        return PDKeychainBindings.sharedKeychainBindings().objectForKey(Constants.tokenKey) as? String
+        return KeychainWrapper.stringForKey(Constants.tokenKey)
     }
     
     class func requestAccess(completion: (OAuthSwiftCredential?, NSError?) -> Void) {
@@ -63,7 +64,7 @@ class AuthenticationManager: NSObject {
     }
     
     class func saveCredentials(credential: OAuthSwiftCredential) {
-        PDKeychainBindings.sharedKeychainBindings().setObject(credential.oauth_token, forKey: Constants.tokenKey)
+        KeychainWrapper.setString(credential.oauth_token, forKey: Constants.tokenKey)
     }
 }
 
