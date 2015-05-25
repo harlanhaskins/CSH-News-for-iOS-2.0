@@ -9,8 +9,7 @@
 #ifndef CSH_News_CSH_News_Bridging_Header_h
 #define CSH_News_CSH_News_Bridging_Header_h
 
-#import "OAuthSwift-Bridging-Header.h"
-#import "PDKeychainBindings.h"
-#import <CommonCrypto/CommonCrypto.h>
+@import PDKeychainBindingsController;
+@import AFNetworking;
 
 #endif

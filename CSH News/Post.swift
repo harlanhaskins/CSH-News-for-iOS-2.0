@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 struct Author {
     let name: String
@@ -18,40 +17,30 @@ struct Author {
         self.email = email
     }
     
-    init?(json: JSON) {
-        let name = json["name"]
-        let email = json["email"]
-        if name == nil || email == nil {
-            return nil
+    static func authorFromJSON(json: NSDictionary) -> Author? {
+        if let
+            name = json["name"] as? String,
+            email = json["email"] as? String {
+                return Author(name: name, email: email)
         }
-        self.init(name: name.string!, email: email.string!)
+        return nil
     }
 }
 
-class Post: Printable {
+struct Post: Printable {
     let author: Author
     let body: String
-    let newsgroup: String
     let subject: String
     
-    convenience init?(json: JSON) {
-        let author = Author(json: json["author"])!
-        let body = json["body"].string!
-        let subject = json["subject"].string!
-        let newsgroup = json["newsgroup"].string!
-        self.init(author: author, body: body, newsgroup: newsgroup, subject: subject)
-    }
-    
-    convenience init(name: String, email: String, body: String, newsgroup: String, subject: String) {
-        let author = Author(name: name, email: email)
-        self.init(author: author, body: body, newsgroup: newsgroup, subject: subject)
-    }
-    
-    init(author: Author, body: String, newsgroup: String, subject: String) {
-        self.author = author
-        self.body = body
-        self.newsgroup = newsgroup
-        self.subject = subject
+    static func postFromJSON(json: NSDictionary) -> Post? {
+        if let
+            authorDict = json["author"] as? NSDictionary,
+            author = Author.authorFromJSON(authorDict),
+            body = json["body"] as? String,
+            subject = json["subject"] as? String {
+                return Post(author: author, body: body, subject: subject)
+        }
+        return nil
     }
     
     var description: String {

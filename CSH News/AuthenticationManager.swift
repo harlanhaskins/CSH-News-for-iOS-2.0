@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import KeychainWrapper
+import OAuthSwift
+import Async
 
 class AuthenticationManager: NSObject {
     
@@ -15,7 +16,7 @@ class AuthenticationManager: NSObject {
         static let credentials = AuthenticationManager.loadCredentials()!
         static let clientID = Constants.credentials.clientID
         static let clientSecret = Constants.credentials.clientSecret
-        static let oAuthURL = NetworkManager.baseURL + "oauth"
+        static let oAuthURL = NewsAPI.sharedManager.baseURL + "oauth"
         static let authorizationURL = Constants.oAuthURL + "authorize"
         static let tokenURL = Constants.oAuthURL + "token"
         static let redirectURL = NSURL(string: "cshnews://callback")!
@@ -29,7 +30,7 @@ class AuthenticationManager: NSObject {
             if let error = error {
                 println(error.localizedDescription)
             } else {
-                let components = credentialString.componentsSeparatedByString("\n") as [String]
+                let components = credentialString.componentsSeparatedByString("\n") as! [String]
                 return (clientID: components.first!, clientSecret: components.last!)
             }
         }
@@ -37,7 +38,10 @@ class AuthenticationManager: NSObject {
     }
     
     class var token: String? {
-        return KeychainWrapper.stringForKey(Constants.tokenKey)
+        if let credential =  PDKeychainBindings.sharedKeychainBindings().objectForKey(Constants.tokenKey) as? String {
+            return credential
+        }
+        return nil
     }
     
     class func requestAccess(completion: (OAuthSwiftCredential?, NSError?) -> Void) {
@@ -64,7 +68,7 @@ class AuthenticationManager: NSObject {
     }
     
     class func saveCredentials(credential: OAuthSwiftCredential) {
-        KeychainWrapper.setString(credential.oauth_token, forKey: Constants.tokenKey)
+        PDKeychainBindings.sharedKeychainBindings().setObject(credential.oauth_token, forKey: Constants.tokenKey)
     }
 }
 
