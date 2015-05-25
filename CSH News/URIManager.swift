@@ -9,11 +9,14 @@
 import Foundation
 import OAuthSwift
 
-private let BaseURIScheme = NSURL(string: "cshnews://")!
-
 class URIManager: NSObject {
+   
+   private struct Constants {
+      static let baseURIScheme = NSURL(string: "cshnews://")!
+   }
+   
    class func URIScheme() -> NSURL {
-      return BaseURIScheme
+      return Constants.baseURIScheme
    }
    
    class func handleURL(url: NSURL) {
