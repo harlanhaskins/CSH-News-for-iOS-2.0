@@ -12,7 +12,7 @@ class PostsViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        AuthenticationManager.sharedManager.oauth2.authorizeEmbeddedWith(self, params: nil, autoDismiss: true)
+//        AuthenticationManager.sharedManager.oauth2.authorizeEmbeddedWith(self, params: nil, autoDismiss: true)
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

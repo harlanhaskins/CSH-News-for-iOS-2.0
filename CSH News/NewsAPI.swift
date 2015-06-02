@@ -47,7 +47,7 @@ class NewsAPI: AFHTTPSessionManager {
             user = User.userFromJSON(userDict) {
                completion(user, nil)
          } else {
-            completion(nil, NetworkErrorCode.Serialization.error(userInfo: nil))
+            completion(nil, NetworkErrorCode.Serialization.error(userInfo: [NSLocalizedDescriptionKey: "Could not deserialize user \(data)"]))
          }
       }) { task, error in
          completion(nil, error)
@@ -74,6 +74,8 @@ class NewsAPI: AFHTTPSessionManager {
       
       let newRequest = AuthenticationManager.sharedManager.oauth2.request(forURL: request.URL!)
       newRequest.HTTPBody = request.HTTPBody
+      newRequest.setValue("application/vnd.csh.webnews.v1+json", forHTTPHeaderField: "Accept")
+      newRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
       return super.dataTaskWithRequest(newRequest, completionHandler: completionHandler)
    }
 }

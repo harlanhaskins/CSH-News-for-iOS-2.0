@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             splitViewController.delegate = self
             splitViewController.preferredDisplayMode = .AllVisible
         }
+        
         NewsAPI.sharedManager.loadPosts { posts, error in
             println(posts)
             println(error)

@@ -47,7 +47,7 @@ struct Post: Printable {
     let body: String
     let creationDate: NSDate
     let followupNewsgroupID: Int?
-    let hasAttachments: Bool
+    let hadAttachments: Bool
     let isDethreaded: Bool
     let isStarred: Bool
     let messageID: String
@@ -67,14 +67,14 @@ struct Post: Printable {
             ancestorIDs = json["ancestor_ids"] as? [Int],
             creationDateString = json["created_at"] as? String,
             creationDate = DateFormatter.sharedFormatter.dateFromISO8601String(creationDateString),
-            hasAttachments = json["has_attachments"] as? Bool,
+            hadAttachments = json["had_attachments"] as? Bool,
             isDethreaded = json["is_dethreaded"] as? Bool,
             isStarred = json["is_starred"] as? Bool,
             messageID = json["message_id"] as? String,
             newsgroupIDs = json["newsgroup_ids"] as? [Int],
             personalLevelInt = json["personal_level"] as? Int,
             personalLevel = PersonalLevel(rawValue: personalLevelInt),
-            stars = json["stars"] as? Int,
+            stars = json["total_stars"] as? Int,
             subject = json["subject"] as? String {
                 
                 let unreadClass = json["unread_class"] as? String
@@ -90,12 +90,12 @@ struct Post: Printable {
                     }
                     return nil
                 }()
-                return Post(author: author, id: id, ancestorIDs: ancestorIDs, body: body, creationDate: creationDate, followupNewsgroupID: followupNewsgroupID, hasAttachments: hasAttachments, isDethreaded: isDethreaded, isStarred: isStarred, messageID: messageID, newsgroupIDs: newsgroupIDs, personalLevel: personalLevel, subject: subject, stars: stars, unreadClass: unreadClass, stickiness: stickiness)
+                return Post(author: author, id: id, ancestorIDs: ancestorIDs, body: body, creationDate: creationDate, followupNewsgroupID: followupNewsgroupID, hadAttachments: hadAttachments, isDethreaded: isDethreaded, isStarred: isStarred, messageID: messageID, newsgroupIDs: newsgroupIDs, personalLevel: personalLevel, subject: subject, stars: stars, unreadClass: unreadClass, stickiness: stickiness)
         }
         return nil
     }
     
     var description: String {
-        return "\(self.author.name): \(self.subject) - \(self.body)"
+        return "\(self.author.name): \(self.subject) - ID: \(self.id)"
     }
 }
