@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import OAuthSwift
+import p2_OAuth2
 
 class URIManager: NSObject {
    
@@ -29,7 +29,7 @@ class URIManager: NSObject {
       if let host = url.host {
          switch host {
          case "callback":
-            OAuth2Swift.handleOpenURL(url)
+            AuthenticationManager.sharedManager.handleURL(url)
             break
          default: break
          }

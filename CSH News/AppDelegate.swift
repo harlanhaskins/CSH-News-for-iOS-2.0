@@ -19,27 +19,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             splitViewController.delegate = self
             splitViewController.preferredDisplayMode = .AllVisible
         }
-        if AuthenticationManager.token == nil {
-            AuthenticationManager.requestAccess { credential, error in
-                if let cred = credential {
-                    NewsAPI.sharedManager.loadPosts { posts, error in
-                        println("done")
-                        println(posts)
-                    }
-                } else if let err = error {
-                }
-            }
-        } else {
-            NewsAPI.sharedManager.loadPosts { posts, error in
-                println("done")
-                println(posts)
+        NewsAPI.sharedManager.loadPosts { posts, error in
+            println(posts)
+            println(error)
+        }
+        NewsAPI.sharedManager.loadUserData { user, error in
+            if let user = user {
+                println(user.username)
+                println(user.displayName)
+                println(user.isAdmin)
+                println(user.creationDate)
+            } else if let error = error {
                 println(error)
-            }
-            NewsAPI.sharedManager.loadUserData { user, error in
-                println(user!.username)
-                println(user!.displayName)
-                println(user!.isAdmin)
-                println(user!.creationDate)
             }
         }
         return true

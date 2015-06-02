@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import OAuthSwift
+import p2_OAuth2
 import Async
 
 class AuthenticationManager: NSObject {
@@ -16,11 +16,31 @@ class AuthenticationManager: NSObject {
         static let credentials = AuthenticationManager.loadCredentials()!
         static let clientID = Constants.credentials.clientID
         static let clientSecret = Constants.credentials.clientSecret
-        static let oAuthURL = NewsAPI.sharedManager.baseURL + "oauth"
+        static let baseURL = NSURL(string: "https://webnews-staging.csh.rit.edu")!
+        static let oAuthURL = Constants.baseURL + "oauth"
         static let authorizationURL = Constants.oAuthURL + "authorize"
         static let tokenURL = Constants.oAuthURL + "token"
-        static let redirectURL = NSURL(string: "cshnews://callback")!
+        static let redirectURL = "cshnews://callback"
         static let tokenKey = "edu.rit.csh.News.OAuthTokenKey"
+        static let sharedManager = AuthenticationManager()
+    }
+    
+    class var sharedManager: AuthenticationManager {
+        return Constants.sharedManager
+    }
+    
+    
+    let oauth2 = OAuth2CodeGrant(settings: [
+        "client_id": Constants.credentials.clientID,
+        "client_secret": Constants.credentials.clientSecret,
+        "authorize_uri": Constants.authorizationURL.absoluteString!,
+        "token_uri": Constants.tokenURL.absoluteString!,
+        "redirect_uris": [Constants.redirectURL],
+        "verbose": true
+    ])
+    
+    func handleURL(url: NSURL) {
+        self.oauth2.handleRedirectURL(url)
     }
     
     class func loadCredentials() -> (clientID: String, clientSecret: String)? {
@@ -37,39 +57,15 @@ class AuthenticationManager: NSObject {
         return nil
     }
     
-    class var token: String? {
-        if let credential =  PDKeychainBindings.sharedKeychainBindings().objectForKey(Constants.tokenKey) as? String {
-            return credential
-        }
-        return nil
-    }
-    
-    class func requestAccess(completion: (OAuthSwiftCredential?, NSError?) -> Void) {
+    func requestAccess(completion: NSError? -> Void) {
         Async.background {
-            let oauth = OAuth2Swift(
-                consumerKey:    Constants.clientID,
-                consumerSecret: Constants.clientSecret,
-                authorizeUrl:   Constants.authorizationURL.absoluteString!,
-                accessTokenUrl: Constants.tokenURL.absoluteString!,
-                responseType:   "token"
-            )
-            oauth.authorizeWithCallbackURL(
-                Constants.redirectURL, scope: "",
-                state: "", params: [:],
-                success: { credential, response in
-                    self.saveCredentials(credential)
-                    completion(credential, nil)
-                },
-                failure: { error in
-                    completion(nil, error)
-                }
-            )
+            self.oauth2.afterAuthorizeOrFailure = { wasFailure, error in
+                completion(error)
+            }
+            self.oauth2.authorize()
         }
     }
     
-    class func saveCredentials(credential: OAuthSwiftCredential) {
-        PDKeychainBindings.sharedKeychainBindings().setObject(credential.oauth_token, forKey: Constants.tokenKey)
-    }
 }
 
 func +(lhs: NSURL, rhs: String) -> NSURL {

@@ -8,6 +8,7 @@
 
 import Foundation
 import Dollar
+import p2_OAuth2
 
 enum NetworkErrorCode: Int {
    case NoAccount = 1
@@ -19,10 +20,12 @@ enum NetworkErrorCode: Int {
    }
 }
 
+
 class NewsAPI: AFHTTPSessionManager {
    
    private struct Constants {
       static let sharedManager = NewsAPI()
+      static let baseURL = "https://webnews-staging.csh.rit.edu"
    }
    
    class var sharedManager: NewsAPI {
@@ -30,7 +33,7 @@ class NewsAPI: AFHTTPSessionManager {
    }
    
    convenience init() {
-      self.init(baseURL: NSURL(string: "https://webnews-staging.csh.rit.edu"))
+      self.init(baseURL: NSURL(string: Constants.baseURL))
       let responseSerializer = AFJSONResponseSerializer()
       responseSerializer.removesKeysWithNullValues = true
       self.responseSerializer = responseSerializer
@@ -69,16 +72,8 @@ class NewsAPI: AFHTTPSessionManager {
    
    override func dataTaskWithRequest(request: NSURLRequest!, completionHandler: ((NSURLResponse!, AnyObject!, NSError!) -> Void)!) -> NSURLSessionDataTask! {
       
-      if AuthenticationManager.token == nil {
-         completionHandler(nil, nil, NetworkErrorCode.NoAccount.error(userInfo: nil))
-         return nil
-      }
-      
-      let mutableRequest = request.mutableCopy() as! NSMutableURLRequest
-      mutableRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-      mutableRequest.setValue("application/vnd.csh.webnews.v1+json", forHTTPHeaderField: "Accept")
-      mutableRequest.setValue("Bearer \(AuthenticationManager.token!)", forHTTPHeaderField: "Authorization")
-      
-      return super.dataTaskWithRequest(mutableRequest, completionHandler: completionHandler)
+      let newRequest = AuthenticationManager.sharedManager.oauth2.request(forURL: request.URL!)
+      newRequest.HTTPBody = request.HTTPBody
+      return super.dataTaskWithRequest(newRequest, completionHandler: completionHandler)
    }
 }

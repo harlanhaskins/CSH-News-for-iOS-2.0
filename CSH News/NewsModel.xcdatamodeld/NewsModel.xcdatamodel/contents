@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14E26a" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Newsgroup" representedClassName="PRODUCT_MODULE_NAME.Newsgroup" syncable="YES">
+        <attribute name="about" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0" indexed="YES" syncable="YES"/>
+        <attribute name="maxUnreadLevel" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="name" attributeType="String" syncable="YES"/>
+        <attribute name="newestPostCreationDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="oldestPostCreationDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="postingAllowed" attributeType="Boolean" syncable="YES"/>
+        <attribute name="unreadCount" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="id"/>
+            </compoundIndex>
+        </compoundIndexes>
+    </entity>
+    <entity name="Post" representedClassName="PRODUCT_MODULE_NAME.Post" syncable="YES">
+        <attribute name="ancestorIDs" attributeType="Transformable" syncable="YES"/>
+        <attribute name="body" attributeType="String" syncable="YES"/>
+        <attribute name="creationDate" attributeType="Date" syncable="YES"/>
+        <attribute name="followupNewsgroupID" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="hasAttachments" attributeType="Boolean" syncable="YES"/>
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0" indexed="YES" syncable="YES"/>
+        <attribute name="isDethreaded" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isStarred" attributeType="Boolean" syncable="YES"/>
+        <attribute name="messageID" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="newsgroupIDs" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="personalLevel" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="stars" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="subject" attributeType="String" syncable="YES"/>
+        <attribute name="unreadClass" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="stickiness" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Stickiness" inverseName="stickiedPost" inverseEntity="Stickiness" syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="id"/>
+            </compoundIndex>
+        </compoundIndexes>
+    </entity>
+    <entity name="Stickiness" representedClassName="PRODUCT_MODULE_NAME.Stickiness" syncable="YES">
+        <attribute name="displayName" attributeType="String" syncable="YES"/>
+        <attribute name="expirationDate" attributeType="Date" syncable="YES"/>
+        <attribute name="username" attributeType="String" syncable="YES"/>
+        <relationship name="stickiedPost" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Post" inverseName="stickiness" inverseEntity="Post" syncable="YES"/>
+    </entity>
+    <entity name="User" representedClassName="PRODUCT_MODULE_NAME.User" syncable="YES">
+        <attribute name="creationDate" attributeType="Date" syncable="YES"/>
+        <attribute name="displayName" attributeType="String" syncable="YES"/>
+        <attribute name="email" attributeType="String" syncable="YES"/>
+        <attribute name="isAdmin" attributeType="Boolean" syncable="YES"/>
+        <attribute name="username" attributeType="String" indexed="YES" syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="username"/>
+            </compoundIndex>
+        </compoundIndexes>
+    </entity>
+    <elements>
+        <element name="User" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="Newsgroup" positionX="-54" positionY="27" width="128" height="165"/>
+        <element name="Post" positionX="-36" positionY="81" width="128" height="270"/>
+        <element name="Stickiness" positionX="-18" positionY="144" width="128" height="105"/>
+    </elements>
+</model>

@@ -8,6 +8,12 @@
 
 import Foundation
 
+struct Stickiness {
+    let username: String
+    let displayName: String
+    let expirationDate: NSDate
+}
+
 struct Author {
     let name: String
     let email: String
@@ -27,18 +33,64 @@ struct Author {
     }
 }
 
+enum PersonalLevel: Int {
+    case None
+    case InThread
+    case Reply
+    case Mine
+}
+
 struct Post: Printable {
     let author: Author
+    let id: Int
+    let ancestorIDs: [Int]
     let body: String
+    let creationDate: NSDate
+    let followupNewsgroupID: Int?
+    let hasAttachments: Bool
+    let isDethreaded: Bool
+    let isStarred: Bool
+    let messageID: String
+    let newsgroupIDs: [Int]
+    let personalLevel: PersonalLevel
     let subject: String
+    let stars: Int
+    let unreadClass: String?
+    let stickiness: Stickiness?
     
     static func postFromJSON(json: NSDictionary) -> Post? {
         if let
             authorDict = json["author"] as? NSDictionary,
             author = Author.authorFromJSON(authorDict),
             body = json["body"] as? String,
+            id = json["id"] as? Int,
+            ancestorIDs = json["ancestor_ids"] as? [Int],
+            creationDateString = json["created_at"] as? String,
+            creationDate = DateFormatter.sharedFormatter.dateFromISO8601String(creationDateString),
+            hasAttachments = json["has_attachments"] as? Bool,
+            isDethreaded = json["is_dethreaded"] as? Bool,
+            isStarred = json["is_starred"] as? Bool,
+            messageID = json["message_id"] as? String,
+            newsgroupIDs = json["newsgroup_ids"] as? [Int],
+            personalLevelInt = json["personal_level"] as? Int,
+            personalLevel = PersonalLevel(rawValue: personalLevelInt),
+            stars = json["stars"] as? Int,
             subject = json["subject"] as? String {
-                return Post(author: author, body: body, subject: subject)
+                
+                let unreadClass = json["unread_class"] as? String
+                let followupNewsgroupID = json["followup_newsgroup_id"] as? Int
+                let stickiness: Stickiness? = {
+                    if let
+                        stickinessDict = json["sticky"] as? [String: String],
+                        username = stickinessDict["username"],
+                        displayName = stickinessDict["display_name"],
+                        expirationString = stickinessDict["created_at"],
+                        expirationDate = DateFormatter.sharedFormatter.dateFromISO8601String(expirationString) {
+                            return Stickiness(username: username, displayName: displayName, expirationDate: expirationDate)
+                    }
+                    return nil
+                }()
+                return Post(author: author, id: id, ancestorIDs: ancestorIDs, body: body, creationDate: creationDate, followupNewsgroupID: followupNewsgroupID, hasAttachments: hasAttachments, isDethreaded: isDethreaded, isStarred: isStarred, messageID: messageID, newsgroupIDs: newsgroupIDs, personalLevel: personalLevel, subject: subject, stars: stars, unreadClass: unreadClass, stickiness: stickiness)
         }
         return nil
     }
